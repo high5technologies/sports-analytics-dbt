@@ -1,6 +1,7 @@
 {{ config(
     tags=["ahl"]
 ) }}
+
 SELECT * 
 FROM 
     (SELECT 
@@ -9,13 +10,13 @@ FROM
         , game_date
         , season
         , season_index
+        , season_type
         --, case when EXTRACT(MONTH FROM game_date) > 7 then EXTRACT(YEAR FROM game_date) + 1 else EXTRACT(YEAR FROM game_date) end as season
         --, 'R' as season_type -- HARD CODED FOR NOW .. ADD season_type to PYTHON scraper based on date range
-        , season_type
-        , PARSE_TIME("%I:%M %p", upper(start_time)) as game_start_time
-        , PARSE_TIME("%I:%M %p", upper(end_time)) as game_end_time
+        , PARSE_TIME("%I:%M %p", upper(nullif(start_time,''))) as game_start_time
+        , PARSE_TIME("%I:%M %p", upper(nullif(end_time,''))) as game_end_time
         , duration as game_duration
-        , (cast(split(duration,':')[ORDINAL(1)] as INT64) * 60) + cast(split(duration,':')[ORDINAL(2)] as INT64) as game_duration_minutes
+        , (cast(split(nullif(duration,''),':')[ORDINAL(1)] as INT64) * 60) + cast(split(nullif(duration,''),':')[ORDINAL(2)] as INT64) as game_duration_minutes
         , cast(replace(attendance,',','') as INT64) as attendance
         , case when started = '1' then TRUE else FALSE end as started_flag
         , case when final = '1' then TRUE else FALSE end as complete_flag
@@ -45,6 +46,7 @@ FROM
 		, cast(home_ppgoals as INT64) as home_ppgoals
 		, cast(home_ppopps as INT64) as home_ppopps
         , row_number() over (partition by game_key order by load_datetime desc) as dedup
-    FROM {{ source('ahl_raw','raw_hockeytech_game') }} 
+    FROM {{ source('ahl_raw','raw_hockeytech_game') }}
     ) a
 WHERE dedup = 1
+

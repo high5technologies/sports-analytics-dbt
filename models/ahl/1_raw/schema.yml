@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+  - name: ahl_raw
+    schema: ahl
+    tables:
+      - name: raw_hockeytech_game
+      - name: raw_hockeytech_coach
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_gamelog
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_goaliebox
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_goalielog
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_mvp
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_ref
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_skaterbox
+        columns:
+          - name: game_key
+            tests:
+              - relationships:
+                  to: source('ahl_raw','raw_hockeytech_game')
+                  field: game_key
+      - name: raw_hockeytech_roster
