@@ -78,7 +78,8 @@ WITH cte_base as (
             inner join {{ ref('ahl__trusted_game') }} g
                 on gl.game_sk = g.game_sk
             inner join {{ ref('ahl__trusted_game_team') }} gt
-                on gl.team_sk = gt.team_sk
+                on g.game_sk = gt.game_sk
+                and gl.team_sk = gt.team_sk
         )
 )
 
