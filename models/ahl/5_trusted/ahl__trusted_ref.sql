@@ -15,6 +15,7 @@ SELECT
     , role.role as ref_primary_role
     , ref.jersey_number
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM 
     (SELECT ref_first_name, ref_last_name, jersey_number, ref_name
     FROM

@@ -19,6 +19,7 @@ SELECT
     , player.birth_date
     , r.birth_place, r.birth_place_city, r.birth_place_location, r.birth_place_country
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM 
     (SELECT player_id, player_first_name, player_last_name, birth_date, jersey_number,player_name
     FROM

@@ -26,6 +26,7 @@ SELECT
     , rgb.time_on_ice
     , rgb.time_on_ice_seconds
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('ahl__conf_hockeytech_goaliebox') }} rgb
     inner join {{ ref('ahl__trusted_player') }} p
         on rgb.goalie_id = p.player_id

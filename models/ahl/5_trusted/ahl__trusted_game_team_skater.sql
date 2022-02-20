@@ -22,6 +22,7 @@ SELECT
     , coalesce(rsb.captain_status,'') as captain_status
     , rsb.starting_flag
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('ahl__conf_hockeytech_skaterbox') }} rsb
     inner join {{ ref('ahl__trusted_player') }} p
         on rsb.skater_id = p.player_id

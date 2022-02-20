@@ -30,6 +30,7 @@ SELECT
     , rg.away_ppgoals as ppgoals
     , rg.away_ppopps as ppopps
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('ahl__conf_hockeytech_game') }} rg
     inner join {{ ref('ahl__trusted_game') }} g 
         on rg.game_id = g.game_id
@@ -60,6 +61,7 @@ SELECT
     , rg.home_ppgoals as ppgoals
     , rg.home_ppopps as ppopps
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('ahl__conf_hockeytech_game') }} rg
     inner join {{ ref('ahl__trusted_game') }} g 
         on rg.game_id = g.game_id

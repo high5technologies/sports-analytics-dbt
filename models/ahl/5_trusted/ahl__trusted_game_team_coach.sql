@@ -21,6 +21,7 @@ SELECT
     , rg.head_coach_flag
     , rg.assistant_coach_flag
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('ahl__conf_hockeytech_coach') }} rg 
     inner join {{ ref('ahl__trusted_game') }} g 
         on rg.game_key = g.game_id 

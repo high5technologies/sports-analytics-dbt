@@ -20,6 +20,7 @@ SELECT
     , player_sk || '|' || season as unique_key
     ,player_sk, season, height, height_inches, weight, shoots, catches, jersey_number, position
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM
     (SELECT 
         p.player_sk
