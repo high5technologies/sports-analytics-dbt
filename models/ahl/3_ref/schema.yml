@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: ahl_ref
+    schema: ahl
+    tables:
+      - name: ref_team
+      - name: ref_team_alias
