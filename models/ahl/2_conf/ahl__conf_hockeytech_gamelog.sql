@@ -14,10 +14,10 @@ FROM
         , upper(event_type) as event_type
 		, cast(split(game_log_key,'|')[ORDINAL(2)] as INT64) as event_order_number
         , period
-		, case when period = 'OT' then 4 when period = 'SO' then 5 else cast(period as INT64) end as period_number
+		, period_number
 		, time
 		, case when period = 'SO' then 3901 else  (cast(split(time,':')[ORDINAL(1)] as INT64) * 60) + cast(split(time,':')[ORDINAL(2)] as INT64) end as event_time_in_seconds
-		, case when period = 'SO' then 3901 else ((cast(split(time,':')[ORDINAL(1)] as INT64) * 60) + cast(split(time,':')[ORDINAL(2)] as INT64)) + ((case when period = 'OT' then 4 else cast(period as INT64) end - 1)*60*20) end as game_event_time_seconds
+		, case when period = 'SO' then 3901 else ((cast(split(time,':')[ORDINAL(1)] as INT64) * 60) + cast(split(time,':')[ORDINAL(2)] as INT64)) + ((period_number - 1)*60*20) end as game_event_time_seconds
         
 		, cast(team_id as INT64) as team_id
         , cast(nullif(player_id,'') as INT64) as player_id
@@ -56,7 +56,11 @@ FROM
         , cast(nullif(goalie_coming_out_id,'') as INT64) as goalie_coming_out_id
         , load_datetime
         , row_number() over (partition by game_log_key order by load_datetime desc) as dedup
-    FROM {{ source('ahl_raw','raw_hockeytech_gamelog') }}
+    FROM 
+        (SELECT * 
+            , case when period = 'OT' then 4 when period = 'SO' then 99 when period like '%OT' then cast(left(period,1) as INT64) + 3 else cast(period as INT64) end as period_number
+        FROM {{ source('ahl_raw','raw_hockeytech_gamelog') }}
+        )
     ) a
 WHERE dedup = 1
 
