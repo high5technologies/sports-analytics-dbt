@@ -14,6 +14,7 @@ SELECT
     , coach_last_name
     , role as coach_primary_role
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM
     (SELECT coach_first_name, coach_last_name, role, coach_name
         , row_number() over (partition by coach_name order by role_count desc, last_coached desc) as dedup_id
