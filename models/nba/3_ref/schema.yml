@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: nba_ref
+    schema: nba
+    tables:
+      - name: ref_team
+      - name: ref_team_alias
+      - name: ref_538_spread_probability
