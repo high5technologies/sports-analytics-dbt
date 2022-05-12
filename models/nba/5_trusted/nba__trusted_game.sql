@@ -8,7 +8,7 @@
     }
     , materialized='incremental'    
     , unique_key='unique_key'
-    , merge_update_columns = ['season','season_type','arena_sk','game_status_text','game_timestamp_utc','game_datetime_central','game_start_time'
+    , merge_update_columns = ['game_week','season','season_type','arena_sk','game_status_text','game_timestamp_utc','game_datetime_central','game_start_time'
                                 ,'game_duration','game_duration_minutes','attendance','complete_flag','ot_flag','ot_count','sellout','series_game_number'
                                 ,'series_text','if_necessary','national_broadcaster_id','national_broadcast_display','total_score_game','total_score_game_4q'
                                 ,'total_score_1h','total_score_1h_perc','total_score_2h','total_score_2h_perc','total_score_1q','total_score_1q_perc'
@@ -22,6 +22,10 @@ SELECT
     , g.game_key as game_key_nbacom
     , brg.game_key as game_key_br
     , g.game_date
+    , CONCAT(CAST(EXTRACT(YEAR from g.game_date) as string), LPAD(CAST(EXTRACT(MONTH from g.game_date) as string),2,'0') ) as game_yearmonth
+    , CONCAT(CAST(EXTRACT(YEAR from g.game_date) as string),'-', LPAD(CAST(EXTRACT(MONTH from g.game_date) as string),2,'0') ) as game_yearmonth_formatted
+    --, EXTRACT(WEEK from g.game_date) as game_week
+    , date_trunc(g.game_date, week) as game_week
     , g.season
     , g.season_type
     , g.game_status_text
@@ -56,6 +60,7 @@ SELECT
     , tps.total_score_4q
     , cast(round(tps.total_score_4q / tps.total_score_game_4q,3) as NUMERIC) as total_score_4q_perc
     , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('nba__conf_nbacom_game') }} g 
     inner join 
         (SELECT game_id

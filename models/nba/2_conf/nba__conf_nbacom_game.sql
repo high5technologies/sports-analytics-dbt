@@ -3,6 +3,15 @@
 ) }}
 
 SELECT * 
+    , case when complete_flag 
+        then 
+            case 
+                when home_score > away_score then 'H'
+                when away_score > home_score then 'A'
+                else 'T'
+            end
+        else 'P'
+    end as winner_h_a
 FROM 
     (SELECT         
         game_key
@@ -90,124 +99,134 @@ FROM
         ,away_pregame_stats_points_in_the_paint
         ,away_pregame_stats_points_second_chance
         ,away_pregame_stats_points_fast_break
-        ,home_postgame_stats_points
-        ,home_postgame_stats_rebounds_total
-        ,home_postgame_stats_assists
-        ,home_postgame_stats_steals
-        ,home_postgame_stats_blocks
-        ,home_postgame_stats_turnovers
-        ,home_postgame_stats_field_goals_percentage
-        ,home_postgame_stats_three_pointers_percentage
-        ,home_postgame_stats_free_throws_percentage
-        ,home_postgame_stats_points_in_the_paint
-        ,home_postgame_stats_points_second_chance
-        ,home_postgame_stats_points_fast_break
-        ,home_postgame_stats_biggest_lead
-        ,home_postgame_stats_lead_changes
-        ,home_postgame_stats_times_tied
-        ,home_postgame_stats_biggest_scoring_run
-        ,home_postgame_stats_turnovers_team
-        ,home_postgame_stats_turnovers_total
-        ,home_postgame_stats_rebounds_team
-        ,home_postgame_stats_points_from_turnovers
-        ,home_postgame_stats_bench_points
-        ,away_postgame_stats_points
-        ,away_postgame_stats_rebounds_total
-        ,away_postgame_stats_assists
-        ,away_postgame_stats_steals
-        ,away_postgame_stats_blocks
-        ,away_postgame_stats_turnovers
-        ,away_postgame_stats_field_goals_percentage
-        ,away_postgame_stats_three_pointers_percentage
-        ,away_postgame_stats_free_throws_percentage
-        ,away_postgame_stats_points_in_the_paint
-        ,away_postgame_stats_points_second_chance
-        ,away_postgame_stats_points_fast_break
-        ,away_postgame_stats_biggest_lead
-        ,away_postgame_stats_lead_changes
-        ,away_postgame_stats_times_tied
-        ,away_postgame_stats_biggest_scoring_run
-        ,away_postgame_stats_turnovers_team
-        ,away_postgame_stats_turnovers_total
-        ,away_postgame_stats_rebounds_team
-        ,away_postgame_stats_points_from_turnovers
-        ,away_postgame_stats_bench_points
-        ,home_starters_minutes
-        ,home_starters_field_goals_made
-        ,home_starters_field_goals_attempted
-        ,home_starters_field_goals_percentage
-        ,home_starters_three_pointers_made
-        ,home_starters_three_pointers_attempted
-        ,home_starters_three_pointers_percentage
-        ,home_starters_free_throws_made
-        ,home_starters_free_throws_attempted
-        ,home_starters_free_throws_percentage
-        ,home_starters_rebounds_offensive
-        ,home_starters_rebounds_defensive
-        ,home_starters_rebounds_total
-        ,home_starters_assists
-        ,home_starters_steals
-        ,home_starters_blocks
-        ,home_starters_turnovers
-        ,home_starters_foulsPersonal
-        ,home_starters_points
-        ,away_starters_minutes
-        ,away_starters_field_goals_made
-        ,away_starters_field_goals_attempted
-        ,away_starters_field_goals_percentage
-        ,away_starters_three_pointers_made
-        ,away_starters_three_pointers_attempted
-        ,away_starters_three_pointers_percentage
-        ,away_starters_free_throws_made
-        ,away_starters_free_throws_attempted
-        ,away_starters_free_throws_percentage
-        ,away_starters_rebounds_offensive
-        ,away_starters_rebounds_defensive
-        ,away_starters_rebounds_total
-        ,away_starters_assists
-        ,away_starters_steals
-        ,away_starters_blocks
-        ,away_starters_turnovers
-        ,away_starters_foulsPersonal
-        ,away_starters_points
-        ,home_bench_minutes
-        ,home_bench_field_goals_made
-        ,home_bench_field_goals_attempted
-        ,home_bench_field_goals_percentage
-        ,home_bench_three_pointers_made
-        ,home_bench_three_pointers_attempted
-        ,home_bench_three_pointers_percentage
-        ,home_bench_free_throws_made
-        ,home_bench_free_throws_attempted
-        ,home_bench_free_throws_percentage
-        ,home_bench_rebounds_offensive
-        ,home_bench_rebounds_defensive
-        ,home_bench_rebounds_total
-        ,home_bench_assists
-        ,home_bench_steals
-        ,home_bench_blocks
-        ,home_bench_turnovers
-        ,home_bench_foulsPersonal
-        ,home_bench_points
-        ,away_bench_minutes
-        ,away_bench_field_goals_made
-        ,away_bench_field_goals_attempted
-        ,away_bench_field_goals_percentage
-        ,away_bench_three_pointers_made
-        ,away_bench_three_pointers_attempted
-        ,away_bench_three_pointers_percentage
-        ,away_bench_free_throws_made
-        ,away_bench_free_throws_attempted
-        ,away_bench_free_throws_percentage
-        ,away_bench_rebounds_offensive
-        ,away_bench_rebounds_defensive
-        ,away_bench_rebounds_total
-        ,away_bench_assists
-        ,away_bench_steals
-        ,away_bench_blocks
-        ,away_bench_turnovers
-        ,away_bench_foulsPersonal
-        ,away_bench_points
+        ,cast(home_postgame_stats_points as INT64) as home_postgame_stats_points
+        ,cast(home_postgame_stats_rebounds_total as INT64) as home_postgame_stats_rebounds_total
+        ,cast(home_postgame_stats_assists as INT64) as home_postgame_stats_assists
+        ,cast(home_postgame_stats_steals as INT64) as home_postgame_stats_steals
+        ,cast(home_postgame_stats_blocks as INT64) as home_postgame_stats_blocks
+        ,cast(home_postgame_stats_turnovers as INT64) as home_postgame_stats_turnovers
+        ,cast(home_postgame_stats_field_goals_percentage as NUMERIC) as home_postgame_stats_field_goals_percentage
+        ,cast(home_postgame_stats_three_pointers_percentage as NUMERIC) as home_postgame_stats_three_pointers_percentage
+        ,cast(home_postgame_stats_free_throws_percentage as NUMERIC) as home_postgame_stats_free_throws_percentage
+        ,cast(home_postgame_stats_points_in_the_paint as INT64) as home_postgame_stats_points_in_the_paint
+        ,cast(home_postgame_stats_points_second_chance as INT64) as home_postgame_stats_points_second_chance
+        ,cast(home_postgame_stats_points_fast_break as INT64) as home_postgame_stats_points_fast_break
+        ,cast(home_postgame_stats_biggest_lead as INT64) as home_postgame_stats_biggest_lead
+        ,cast(home_postgame_stats_lead_changes as INT64) as home_postgame_stats_lead_changes
+        ,cast(home_postgame_stats_times_tied as INT64) as home_postgame_stats_times_tied
+        ,cast(home_postgame_stats_biggest_scoring_run as INT64) as home_postgame_stats_biggest_scoring_run
+        ,cast(home_postgame_stats_turnovers_team as INT64) as home_postgame_stats_turnovers_team
+        ,cast(home_postgame_stats_turnovers_total as INT64) as home_postgame_stats_turnovers_total
+        ,cast(home_postgame_stats_rebounds_team as INT64) as home_postgame_stats_rebounds_team
+        ,cast(home_postgame_stats_points_from_turnovers as INT64) as home_postgame_stats_points_from_turnovers
+        ,cast(home_postgame_stats_bench_points as INT64) as home_postgame_stats_bench_points
+        ,cast(away_postgame_stats_points as INT64) as away_postgame_stats_points
+        ,cast(away_postgame_stats_rebounds_total as INT64) as away_postgame_stats_rebounds_total
+        ,cast(away_postgame_stats_assists as INT64) as away_postgame_stats_assists
+        ,cast(away_postgame_stats_steals as INT64) as away_postgame_stats_steals
+        ,cast(away_postgame_stats_blocks as INT64) as away_postgame_stats_blocks
+        ,cast(away_postgame_stats_turnovers as INT64) as away_postgame_stats_turnovers
+        ,cast(away_postgame_stats_field_goals_percentage as NUMERIC) as away_postgame_stats_field_goals_percentage
+        ,cast(away_postgame_stats_three_pointers_percentage as NUMERIC) as away_postgame_stats_three_pointers_percentage
+        ,cast(away_postgame_stats_free_throws_percentage as NUMERIC) as away_postgame_stats_free_throws_percentage
+        ,cast(away_postgame_stats_points_in_the_paint as INT64) as away_postgame_stats_points_in_the_paint
+        ,cast(away_postgame_stats_points_second_chance as INT64) as away_postgame_stats_points_second_chance
+        ,cast(away_postgame_stats_points_fast_break as INT64) as away_postgame_stats_points_fast_break
+        ,cast(away_postgame_stats_biggest_lead as INT64) as away_postgame_stats_biggest_lead
+        ,cast(away_postgame_stats_lead_changes as INT64) as away_postgame_stats_lead_changes
+        ,cast(away_postgame_stats_times_tied as INT64) as away_postgame_stats_times_tied
+        ,cast(away_postgame_stats_biggest_scoring_run as INT64) as away_postgame_stats_biggest_scoring_run
+        ,cast(away_postgame_stats_turnovers_team as INT64) as away_postgame_stats_turnovers_team
+        ,cast(away_postgame_stats_turnovers_total as INT64) as away_postgame_stats_turnovers_total
+        ,cast(away_postgame_stats_rebounds_team as INT64) as away_postgame_stats_rebounds_team
+        ,cast(away_postgame_stats_points_from_turnovers as INT64) as away_postgame_stats_points_from_turnovers
+        ,cast(away_postgame_stats_bench_points as INT64) as away_postgame_stats_bench_points
+        ,home_starters_minutes as home_starters_minutes_string
+        , cast(round(cast(split(home_starters_minutes,':')[ORDINAL(1)] as INT64) + (cast(split(home_starters_minutes,':')[ORDINAL(2)] as INT64) / 60),3) as NUMERIC) as home_starters_minutes
+        , cast((cast(split(home_starters_minutes,':')[ORDINAL(1)] as INT64) * 60) + cast(split(home_starters_minutes,':')[ORDINAL(2)] as INT64) as INT64) as home_starters_seconds
+        ,cast(home_starters_field_goals_made as INT64) as home_starters_field_goals_made
+        ,cast(home_starters_field_goals_attempted as INT64) as home_starters_field_goals_attempted
+        ,cast(home_starters_field_goals_percentage as NUMERIC) as home_starters_field_goals_percentage
+        ,cast(home_starters_three_pointers_made as INT64) as home_starters_three_pointers_made
+        ,cast(home_starters_three_pointers_attempted as INT64) as home_starters_three_pointers_attempted
+        ,cast(home_starters_three_pointers_percentage as NUMERIC) as home_starters_three_pointers_percentage
+        ,cast(home_starters_free_throws_made as INT64) as home_starters_free_throws_made
+        ,cast(home_starters_free_throws_attempted as INT64) as home_starters_free_throws_attempted
+        ,cast(home_starters_free_throws_percentage as NUMERIC) as home_starters_free_throws_percentage
+        ,cast(home_starters_rebounds_offensive as INT64) as home_starters_rebounds_offensive
+        ,cast(home_starters_rebounds_defensive as INT64) as home_starters_rebounds_defensive
+        ,cast(home_starters_rebounds_total as INT64) as home_starters_rebounds_total
+        ,cast(home_starters_assists as INT64) as home_starters_assists
+        ,cast(home_starters_steals as INT64) as home_starters_steals
+        ,cast(home_starters_blocks as INT64) as home_starters_blocks
+        ,cast(home_starters_turnovers as INT64) as home_starters_turnovers
+        ,cast(home_starters_foulsPersonal as INT64) as home_starters_foulsPersonal
+        ,cast(home_starters_points as INT64) as home_starters_points
+        , away_starters_minutes as away_starters_minutes_string
+        , cast(round(cast(split(away_starters_minutes,':')[ORDINAL(1)] as INT64) + (cast(split(away_starters_minutes,':')[ORDINAL(2)] as INT64) / 60),3) as NUMERIC) as away_starters_minutes
+        , cast((cast(split(away_starters_minutes,':')[ORDINAL(1)] as INT64) * 60) + cast(split(away_starters_minutes,':')[ORDINAL(2)] as INT64) as INT64) as away_starters_seconds
+        ,cast(away_starters_field_goals_made as INT64) as away_starters_field_goals_made
+        ,cast(away_starters_field_goals_attempted as INT64) as away_starters_field_goals_attempted
+        ,cast(away_starters_field_goals_percentage as NUMERIC) as away_starters_field_goals_percentage
+        ,cast(away_starters_three_pointers_made as INT64) as away_starters_three_pointers_made
+        ,cast(away_starters_three_pointers_attempted as INT64) as away_starters_three_pointers_attempted
+        ,cast(away_starters_three_pointers_percentage as NUMERIC) as away_starters_three_pointers_percentage
+        ,cast(away_starters_free_throws_made as INT64) as away_starters_free_throws_made
+        ,cast(away_starters_free_throws_attempted as INT64) as away_starters_free_throws_attempted
+        ,cast(away_starters_free_throws_percentage as NUMERIC) as away_starters_free_throws_percentage
+        ,cast(away_starters_rebounds_offensive as INT64) as away_starters_rebounds_offensive
+        ,cast(away_starters_rebounds_defensive as INT64) as away_starters_rebounds_defensive
+        ,cast(away_starters_rebounds_total as INT64) as away_starters_rebounds_total
+        ,cast(away_starters_assists as INT64) as away_starters_assists
+        ,cast(away_starters_steals as INT64) as away_starters_steals
+        ,cast(away_starters_blocks as INT64) as away_starters_blocks
+        ,cast(away_starters_turnovers as INT64) as away_starters_turnovers
+        ,cast(away_starters_foulsPersonal as INT64) as away_starters_foulsPersonal
+        ,cast(away_starters_points as INT64) as away_starters_points
+        ,home_bench_minutes as home_bench_minutes_string
+        , cast(round(cast(split(home_bench_minutes,':')[ORDINAL(1)] as INT64) + (cast(split(home_bench_minutes,':')[ORDINAL(2)] as INT64) / 60),3) as NUMERIC) as home_bench_minutes
+        , cast((cast(split(home_bench_minutes,':')[ORDINAL(1)] as INT64) * 60) + cast(split(home_bench_minutes,':')[ORDINAL(2)] as INT64) as INT64) as home_bench_seconds
+         
+        ,cast(home_bench_field_goals_made as INT64) as home_bench_field_goals_made
+        ,cast(home_bench_field_goals_attempted as INT64) as home_bench_field_goals_attempted
+        ,cast(home_bench_field_goals_percentage as NUMERIC) as home_bench_field_goals_percentage
+        ,cast(home_bench_three_pointers_made as INT64) as home_bench_three_pointers_made
+        ,cast(home_bench_three_pointers_attempted as INT64) as home_bench_three_pointers_attempted
+        ,cast(home_bench_three_pointers_percentage as NUMERIC) as home_bench_three_pointers_percentage
+        ,cast(home_bench_free_throws_made as INT64) as home_bench_free_throws_made
+        ,cast(home_bench_free_throws_attempted as INT64) as home_bench_free_throws_attempted
+        ,cast(home_bench_free_throws_percentage as NUMERIC) as home_bench_free_throws_percentage
+        ,cast(home_bench_rebounds_offensive as INT64) as home_bench_rebounds_offensive
+        ,cast(home_bench_rebounds_defensive as INT64) as home_bench_rebounds_defensive
+        ,cast(home_bench_rebounds_total as INT64) as home_bench_rebounds_total
+        ,cast(home_bench_assists as INT64) as home_bench_assists
+        ,cast(home_bench_steals as INT64) as home_bench_steals
+        ,cast(home_bench_blocks as INT64) as home_bench_blocks
+        ,cast(home_bench_turnovers as INT64) as home_bench_turnovers
+        ,cast(home_bench_foulsPersonal as INT64) as home_bench_foulsPersonal
+        ,cast(home_bench_points as INT64) as home_bench_points
+        ,away_bench_minutes as away_bench_minutes_string
+        , cast(round(cast(split(away_bench_minutes,':')[ORDINAL(1)] as INT64) + (cast(split(away_bench_minutes,':')[ORDINAL(2)] as INT64) / 60),3) as NUMERIC) as away_bench_minutes
+        , cast((cast(split(away_bench_minutes,':')[ORDINAL(1)] as INT64) * 60) + cast(split(away_bench_minutes,':')[ORDINAL(2)] as INT64) as INT64) as away_bench_seconds
+         
+        ,cast(away_bench_field_goals_made as INT64) as away_bench_field_goals_made
+        ,cast(away_bench_field_goals_attempted as INT64) as away_bench_field_goals_attempted
+        ,cast(away_bench_field_goals_percentage as NUMERIC) as away_bench_field_goals_percentage
+        ,cast(away_bench_three_pointers_made as INT64) as away_bench_three_pointers_made
+        ,cast(away_bench_three_pointers_attempted as INT64) as away_bench_three_pointers_attempted
+        ,cast(away_bench_three_pointers_percentage as NUMERIC) as away_bench_three_pointers_percentage
+        ,cast(away_bench_free_throws_made as INT64) as away_bench_free_throws_made
+        ,cast(away_bench_free_throws_attempted as INT64) as away_bench_free_throws_attempted
+        ,cast(away_bench_free_throws_percentage as NUMERIC) as away_bench_free_throws_percentage
+        ,cast(away_bench_rebounds_offensive as INT64) as away_bench_rebounds_offensive
+        ,cast(away_bench_rebounds_defensive as INT64) as away_bench_rebounds_defensive
+        ,cast(away_bench_rebounds_total as INT64) as away_bench_rebounds_total
+        ,cast(away_bench_assists as INT64) as away_bench_assists
+        ,cast(away_bench_steals as INT64) as away_bench_steals
+        ,cast(away_bench_blocks as INT64) as away_bench_blocks
+        ,cast(away_bench_turnovers as INT64) as away_bench_turnovers
+        ,cast(away_bench_foulsPersonal as INT64) as away_bench_foulsPersonal
+        ,cast(away_bench_points as INT64) as away_bench_points
         ,load_datetime
         , row_number() over (partition by game_key order by load_datetime desc) as dedup
     FROM {{ source('nba_raw','raw_nbacom_game') }}
