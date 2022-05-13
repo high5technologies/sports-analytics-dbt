@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: nba_raw
+    schema: nba
+    tables:
+      - name: raw_nbacom_game
+      - name: raw_nbacom_game_player
+      - name: raw_nbacom_game_inactive
+      - name: raw_nbacom_game_official
+      - name: raw_nbacom_game_team_period_score
+      - name: raw_nbacom_game_event
+      - name: raw_538_predictions
+      - name: raw_538_player_raptor
+      - name: raw_sbr_consensus
+      - name: raw_sbr_lines
+      - name: raw_basketballreference_game
+      - name: raw_basketballreference_playerbox
+      - name: raw_espn_predictions
+      - name: raw_espn_playbyplay
