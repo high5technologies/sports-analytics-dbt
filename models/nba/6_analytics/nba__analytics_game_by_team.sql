@@ -31,6 +31,10 @@ SELECT
     , g.game_week
     , g.season
     , g.season_type
+    , tt.team
+    , tt.team_abbr
+    , tt.division
+    , tt.conference
     , g.game_status_text
     , g.game_timestamp_utc
     , g.game_datetime_central
@@ -64,6 +68,8 @@ SELECT
 FROM {{ ref('nba__trusted_game') }} g
     inner join {{ ref('nba__trusted_game_team') }} gt
         on g.game_sk = gt.game_sk
+    inner join {{ ref('nba__trusted_team') }} tt
+        on gt.team_sk = tt.team_sk
     inner join {{ ref('nba__trusted_arena') }} a 
         on g.arena_sk = a.arena_sk
 {% if is_incremental() %}
