@@ -26,7 +26,36 @@
                                 ,'update_datetime']
 ) }}
  
-    
+WITH fivethirtyeight as (
+    SELECT 
+        fivethirtyeight_key
+        , fte.game_date
+        , hlkp_fte.team_abbr as home_team_abbr
+        , alkp_fte.team_abbr as away_team_abbr
+        , fte.neutral
+        , fte.playoff
+        , fte.home_carm_elo_post 
+        , fte.home_carm_elo_pre 
+        , fte.home_carm_elo_prob_pre 
+        , fte.home_elo_post 
+        , fte.home_elo_pre
+        , fte.home_elo_prob_pre 
+        , fte.home_raptor_pre 
+        , fte.home_raptor_prob_pre
+        , fte.away_carm_elo_post 
+        , fte.away_carm_elo_pre 
+        , fte.away_carm_elo_prob_pre 
+        , fte.away_elo_post 
+        , fte.away_elo_pre
+        , fte.away_elo_prob_pre 
+        , fte.away_raptor_pre 
+        , fte.away_raptor_prob_pre
+    FROM {{ ref('nba__conf_538_prediction') }} fte 
+        left join {{ ref('nba__transform_team_lookup') }} hlkp_fte
+            on fte.home_team_abbr = hlkp_fte.look_up
+        left join {{ ref('nba__transform_team_lookup') }} alkp_fte
+            on fte.away_team_abbr = alkp_fte.look_up
+)
 SELECT 
     GENERATE_UUID() as game_team_sk
     , game_sk || '|' || team_sk || '|' || h_a as unique_key
@@ -150,11 +179,9 @@ FROM
         left join {{ ref('nba__trusted_team') }} tt
             on lkp_nbacom.team_abbr = tt.team_abbr
             and g.season = tt.season
-        left join {{ ref('nba__conf_538_prediction') }} fte 
+        left join fivethirtyeight fte 
             on g.game_date = fte.game_date
-        left join {{ ref('nba__transform_team_lookup') }} lkp_fte
-            on fte.home_team_abbr = lkp_fte.look_up
-            and lkp_nbacom.team_abbr = lkp_fte.team_abbr
+            and lkp_nbacom.team_abbr = fte.home_team_abbr
     {% if is_incremental() %}
         WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
     {% endif %}
@@ -258,11 +285,9 @@ FROM
         left join {{ ref('nba__trusted_team') }} tt
             on lkp_nbacom.team_abbr = tt.team_abbr
             and g.season = tt.season
-        left join {{ ref('nba__conf_538_prediction') }} fte 
+        left join fivethirtyeight fte 
             on g.game_date = fte.game_date
-        left join {{ ref('nba__transform_team_lookup') }} lkp_fte
-            on fte.away_team_abbr = lkp_fte.look_up
-            and lkp_nbacom.team_abbr = lkp_fte.team_abbr
+            and lkp_nbacom.team_abbr = fte.away_team_abbr
     {% if is_incremental() %}
         WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
     {% endif %}
