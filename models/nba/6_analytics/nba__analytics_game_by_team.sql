@@ -1,9 +1,23 @@
 {{ config(
     tags=["nba"]
+    , labels = {'project': 'sports_analytics', 'league':'nba'}
+    , partition_by = {
+      'field': 'game_date',
+      'data_type': 'date',
+      'granularity': 'day'
+    }
+    , materialized='incremental'    
+    , unique_key='unique_key'
+    , merge_update_columns = ['arena_name','arena_city','arena_state','arena_country','arena_timezone','game_yearmonth','game_yearmonth_formatted','game_week',
+                              'season','season_type','game_status_text','game_timestamp_utc','game_datetime_central','game_start_time','attendance','complete_flag',
+                              'ot_flag','ot_count','game_bit','sellout','series_game_number','series_text','if_necessary','national_broadcast_display',
+                              'total_score_game','h_a','team_score','opp_score','w_l','win_bit','score_diff_game','team_seed',
+                              'elo_f_d','raptor_f_d','elo_worth_game','elo_win_game','raptor_worth_game','raptor_win_game','update_datetime']
 ) }}
 
 SELECT 
-    g.game_sk
+    gt.game_team_sk as unique_key
+    , g.game_sk
     , gt.game_team_sk
     , a.arena_sk
     , g.game_date
@@ -45,8 +59,13 @@ SELECT
     , gt.elo_win_game
     , gt.raptor_worth_game
     , gt.raptor_win_game
+    , CURRENT_DATETIME() as insert_datetime
+    , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('nba__trusted_game') }} g
     inner join {{ ref('nba__trusted_game_team') }} gt
         on g.game_sk = gt.game_sk
     inner join {{ ref('nba__trusted_arena') }} a 
         on g.arena_sk = a.arena_sk
+{% if is_incremental() %}
+    WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
+{% endif %}
