@@ -85,6 +85,7 @@ FROM
     (SELECT 
         tg.game_sk
         , tt.team_sk
+        , tt_opp.team_sk as opp_team_sk
         , 'H' as h_a
         , tg.game_date 
         , fte.fivethirtyeight_key
@@ -179,6 +180,11 @@ FROM
         left join {{ ref('nba__trusted_team') }} tt
             on lkp_nbacom.team_abbr = tt.team_abbr
             and g.season = tt.season
+        left join {{ ref('nba__transform_team_lookup') }} lkp_nbacom_opp
+            on g.away_team_tricode = lkp_nbacom_opp.look_up
+        left join {{ ref('nba__trusted_team') }} tt_opp
+            on lkp_nbacom_opp.team_abbr = tt_opp.team_abbr
+            and g.season = tt_opp.season
         left join fivethirtyeight fte 
             on g.game_date = fte.game_date
             and lkp_nbacom.team_abbr = fte.home_team_abbr
@@ -191,6 +197,7 @@ FROM
     SELECT 
         tg.game_sk
         , tt.team_sk
+        , tt_opp.team_sk as opp_team_sk
         , 'A' as h_a
         , tg.game_date 
         , fte.fivethirtyeight_key
@@ -288,6 +295,11 @@ FROM
         left join fivethirtyeight fte 
             on g.game_date = fte.game_date
             and lkp_nbacom.team_abbr = fte.away_team_abbr
+        left join {{ ref('nba__transform_team_lookup') }} lkp_nbacom_opp
+            on g.home_team_tricode = lkp_nbacom_opp.look_up
+        left join {{ ref('nba__trusted_team') }} tt_opp
+            on lkp_nbacom_opp.team_abbr = tt_opp.team_abbr
+            and g.season = tt_opp.season
     {% if is_incremental() %}
         WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
     {% endif %}
