@@ -10,6 +10,7 @@ SELECT
     --, a.arena_country
     --, a.arena_timezone
     --, game_yearmonth
+    , game_date
     , game_yearmonth_formatted as game_yearmonth
     , game_week
     , season
