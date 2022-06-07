@@ -12,7 +12,7 @@ SELECT
     , t.team_id_nbacom
     , t.season
     , concat(t.team_city, ' ', t.team_nickname) as team
-    , t.team_abbr
+    , r.team_abbr
     , t.team_city
     , t.team_nickname
     , t.team_slug
