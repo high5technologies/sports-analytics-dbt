@@ -42,6 +42,8 @@ SELECT
     , team_score
     , opp_score
     , w_l
+    , wins
+    , losses
     --, win_bit
     --, score_diff_game
     --, team_seed

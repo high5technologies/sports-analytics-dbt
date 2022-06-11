@@ -61,7 +61,8 @@ SELECT
     , gt.team_score
     , gt.opp_score
     , gt.w_l
-    , gt.win_bit
+    , gt.win_bit as wins
+    , case when gt.win_bit = 1 then 0 when gt.win_bit = 0 then 1 end as losses
     , gt.score_diff_game
     , gt.team_seed
     , gt.elo_f_d
@@ -81,6 +82,9 @@ FROM {{ ref('nba__trusted_game') }} g
         on gt.opp_team_sk = tt_opp.team_sk
     inner join {{ ref('nba__trusted_arena') }} a 
         on g.arena_sk = a.arena_sk
+    --inner join {{ ref('nba__trusted_game_team') }} ogt
+    --    on g.game_sk = ogt.game_sk
+    --    and gt.team_sk != ogt.team_sk
 {% if is_incremental() %}
     WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
 {% endif %}
