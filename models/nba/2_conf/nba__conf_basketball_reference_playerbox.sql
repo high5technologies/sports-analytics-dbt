@@ -48,8 +48,9 @@ FROM
         ,cast(pts as INT64) as pts
         , cast(replace(plus_minus,'+','') as INT64) as plus_minus
         ,LOAD_DATETIME
-        , row_number() over (partition by player_stat_key order by load_datetime desc) as dedup
+        --, row_number() over (partition by player_stat_key order by load_datetime desc) as dedup
     FROM {{ source('nba_raw','raw_basketballreference_playerbox') }}
+    QUALIFY row_number() over (partition by player_stat_key order by load_datetime desc) = 1
     ) a
-WHERE dedup = 1
+
 
