@@ -59,6 +59,9 @@ SELECT
     , cast(round(tps.total_score_3q / tps.total_score_game_4q,3) as NUMERIC) as total_score_3q_perc
     , tps.total_score_4q
     , cast(round(tps.total_score_4q / tps.total_score_game_4q,3) as NUMERIC) as total_score_4q_perc
+    , case when ar.division = hr.division then true else false end as inter_division
+    , case when ar.conference = hr.conference then true else false end as inter_conference
+ 
     , CURRENT_DATETIME() as insert_datetime
     , CURRENT_DATETIME() as update_datetime
 FROM {{ ref('nba__conf_nbacom_game') }} g 
@@ -83,6 +86,15 @@ FROM {{ ref('nba__conf_nbacom_game') }} g
     left join {{ ref('nba__transform_team_lookup') }} lkp_br
         on brg.home_abbr = lkp_br.look_up
         and lkp_nbacom.team_abbr = lkp_br.team_abbr
+
+    left join {{ ref('nba__transform_team_lookup') }} hlkp
+        on g.home_team_tricode = hlkp.look_up
+    left join {{ source('nba_ref','ref_team') }} hr
+        on hlkp.team_abbr = hr.team_abbr
+    left join {{ ref('nba__transform_team_lookup') }} alkp
+        on g.away_team_tricode = alkp.look_up
+    left join {{ source('nba_ref','ref_team') }} ar
+        on alkp.team_abbr = ar.team_abbr
 {% if is_incremental() %}
   WHERE g.game_date >= (SELECT max(game_date) from {{ this }})
 {% endif %}
