@@ -10,5 +10,6 @@ FROM
     SELECT season, season_type, away_team_tricode as team, game_date
     FROM {{ ref('nba__conf_nbacom_game') }}
     ) d
-WHERE team = 'ORL'
+WHERE team = 'SAC'
+    and game_date between '2018-10-01' and '2019-07-01'
 ORDER BY game_date
