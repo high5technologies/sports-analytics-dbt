@@ -64,7 +64,8 @@ FROM
         , case when action_type in ('Foul','Violation') and CONTAINS_SUBSTR(description, ')') then reverse(split(split(reverse(description),')')[offset(1)],'(')[offset(0)]) end as ref_name
 
         ,load_datetime
-        , row_number() over (partition by game_event_key order by load_datetime desc) as dedup
-        FROM {{ source('nba_raw','raw_nbacom_game_event') }}
+        --, row_number() over (partition by game_event_key order by load_datetime desc) as dedup
+    FROM {{ source('nba_raw','raw_nbacom_game_event') }}
+    QUALIFY row_number() over (partition by game_event_key order by load_datetime desc) = 1
     ) a
-WHERE dedup = 1
+

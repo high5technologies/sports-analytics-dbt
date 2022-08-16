@@ -228,8 +228,9 @@ FROM
         ,cast(away_bench_foulsPersonal as INT64) as away_bench_foulsPersonal
         ,cast(away_bench_points as INT64) as away_bench_points
         ,load_datetime
-        , row_number() over (partition by game_key order by load_datetime desc) as dedup
+        --, row_number() over (partition by game_key order by load_datetime desc) as dedup
     FROM {{ source('nba_raw','raw_nbacom_game') }}
+    QUALIFY row_number() over (partition by game_key order by load_datetime desc) = 1
     ) a
-WHERE dedup = 1
+
 
