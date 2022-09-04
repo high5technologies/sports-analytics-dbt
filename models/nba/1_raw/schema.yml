@@ -18,3 +18,4 @@ sources:
       - name: raw_basketballreference_playerbox
       - name: raw_espn_predictions
       - name: raw_espn_playbyplay
+      - name: raw_swish_salary
