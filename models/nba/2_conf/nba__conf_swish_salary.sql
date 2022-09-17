@@ -6,8 +6,8 @@ SELECT
     swish_salary_key
     ,game_date
     ,salary_source
-    ,player_id as player_id_swish
-    ,upper(player_name) as player_name
+    ,player_id_swish
+    ,player_name
     ,team_abbr
     ,pos_main
     ,cast(projected_fantasy_pts as numeric) as projected_fantasy_pts

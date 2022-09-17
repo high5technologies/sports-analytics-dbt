@@ -9,9 +9,9 @@ SELECT
     ,h_a
     ,person_id as player_id_nbacom
     ,game_date
-    ,first_name || ' ' || family_name as player_name
-    ,first_name as player_first_name
-    ,family_name as player_last_name
+    ,upper(first_name || ' ' || family_name) as player_name
+    ,upper(first_name) as player_first_name
+    ,upper(family_name) as player_last_name
     ,name_i as player_name_i
     ,player_slug
     ,position
