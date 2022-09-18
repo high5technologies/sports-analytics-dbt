@@ -3,9 +3,80 @@
     , labels = {'project': 'sports_analytics', 'league':'nba'}
     , materialized='incremental'    
     , unique_key='unique_key'
-    , merge_update_columns = ['player_name','player_first_name','player_last_name','player_name_i','player_slug'
-                                ,'player_primary_position','jersey_num','update_datetime']
+    , merge_update_columns = ['player_id_swish','player_id_fantasylabs','player_id_linestar','player_name','player_first_name','player_last_name'
+                              ,'player_name_i','player_slug','player_primary_position','jersey_num','update_datetime']
 ) }}
+
+-------------------------------------------------------------
+-- Player base data (nba.com)
+-------------------------------------------------------------
+WITH cte_player_base as (
+    SELECT 
+        player_id_nbacom
+        ,player_name
+        ,player_first_name
+        ,player_last_name
+        ,player_name_i
+        ,player_slug
+        ,jersey_num
+        ,position
+        ,case when position = '' then 0 else count(*) end as cnt -- ignore counts where no position to get an actual position in the next query
+    FROM {{ ref('nba__conf_nbacom_game_player') }}
+    --WHERE position != ''
+        --and game_date between var_start_game_date and var_end_game_date
+    GROUP BY player_id_nbacom
+        ,player_name
+        ,player_first_name
+        ,player_last_name
+        ,player_name_i
+        ,player_slug
+        ,jersey_num
+        ,position
+) 
+
+, base as (
+    SELECT 
+        GENERATE_UUID() as player_sk
+        ,p.player_id_nbacom as unique_key
+        ,p.player_id_nbacom
+        --,mr.player_id_rotoguru
+        ,p.player_name
+        ,p.player_first_name
+        ,p.player_last_name
+        ,p.player_name_i
+        ,p.player_slug
+        ,nullif(p.jersey_num,'') as jersey_num
+        ,p.position as player_primary_position
+        ,row_number() over (partition by p.player_id_nbacom order by p.cnt, p.position) as dedup
+        ,CURRENT_DATETIME() as insert_datetime
+        ,CURRENT_DATETIME() as update_datetime
+    FROM cte_player_base p 
+        --left join cte_match_results mr 
+        --    on p.player_id_nbacom = mr.player_id_nbacom
+    WHERE 1=1
+    QUALIFY dedup = 1
+)
+
+SELECT 
+    b.player_sk
+    ,b.unique_key
+    ,b.player_id_nbacom
+    ,f.player_id_swish
+    ,f.player_id_fantasylabs
+    ,f.player_id_linestar
+    ,b.player_name
+    ,b.player_first_name
+    ,b.player_last_name
+    ,b.player_name_i
+    ,b.player_slug
+    ,b.jersey_num
+    ,b.player_primary_position
+    ,b.insert_datetime
+    ,b.update_datetime
+FROM base b 
+    left join {{ ref('nba__transform_player_fuzzy_match') }} f 
+        on b.player_id_nbacom = f.player_id_nbacom
+
 
 /*
 WITH cte_nbacom_players as (
@@ -66,52 +137,3 @@ WITH cte_nbacom_players as (
     QUALIFY row_number() over (partition by player_id_nbacom order by team_abbr) = 1
 )
 */
--------------------------------------------------------------
--- Player base data (nba.com)
--------------------------------------------------------------
-WITH cte_player_base as (
-    SELECT 
-        player_id_nbacom
-        ,player_name
-        ,player_first_name
-        ,player_last_name
-        ,player_name_i
-        ,player_slug
-        ,jersey_num
-        ,position
-        ,count(*) as cnt
-    FROM {{ ref('nba__conf_nbacom_game_player') }}
-    WHERE position != ''
-        --and game_date between var_start_game_date and var_end_game_date
-    GROUP BY player_id_nbacom
-        ,player_name
-        ,player_first_name
-        ,player_last_name
-        ,player_name_i
-        ,player_slug
-        ,jersey_num
-        ,position
-) 
-
-SELECT 
-    GENERATE_UUID() as player_sk
-    ,p.player_id_nbacom as unique_key
-    ,p.player_id_nbacom
-    --,mr.player_id_rotoguru
-    ,p.player_name
-    ,p.player_first_name
-    ,p.player_last_name
-    ,p.player_name_i
-    ,p.player_slug
-    ,nullif(p.jersey_num,'') as jersey_num
-    ,p.position as player_primary_position
-    ,row_number() over (partition by p.player_id_nbacom order by p.cnt, p.position) as dedup
-    ,CURRENT_DATETIME() as insert_datetime
-    ,CURRENT_DATETIME() as update_datetime
-FROM cte_player_base p 
-    --left join cte_match_results mr 
-    --    on p.player_id_nbacom = mr.player_id_nbacom
-WHERE 1=1
-QUALIFY dedup = 1
-
-

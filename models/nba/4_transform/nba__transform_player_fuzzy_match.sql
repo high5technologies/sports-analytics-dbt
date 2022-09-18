@@ -147,9 +147,82 @@ WHERE team != '' and team_abbr is null
         --ROW_NUMBER() OVER (partition by player_id_nbacom, team_abbr, game_date ORDER BY linestar_name_score desc) = 1
 )
 
+, unique_nbacom_players as (
+    SELECT 
+        n.player_id_nbacom
+        , max(n.nbacom_player_name) as nbacom_player_name
+    FROM nbacom_game_players n
+    GROUP BY n.player_id_nbacom
+)
 
+, unqiue_swish as (
+    SELECT player_id_nbacom, player_id_swish, swish_player_name, swish_name_score
+        , count(*) as cnt
+        , row_number() over(partition by player_id_nbacom order by count(*) desc) as row_id
+    FROM swish_fuzzy_match
+    --WHERE player_id_nbacom = '1628404'
+    GROUP BY player_id_nbacom, player_id_swish, swish_player_name, swish_name_score
+    QUALIFY row_id = 1 
+)
+    
+, unqiue_fantasylabs as (
+    SELECT player_id_nbacom, player_id_fantasylabs, fantasylabs_player_name, fantasylabs_name_score
+        , count(*) as cnt
+        , row_number() over(partition by player_id_nbacom order by count(*) desc) as row_id
+    FROM fantasylabs_fuzzy_match
+    --WHERE player_id_nbacom = '1628404'
+    GROUP BY player_id_nbacom, player_id_fantasylabs, fantasylabs_player_name, fantasylabs_name_score
+    QUALIFY row_id = 1 
+)
+
+, unqiue_linestar as (
+    SELECT player_id_nbacom, player_id_linestar, linestar_player_name, linestar_name_score
+        , count(*) as cnt
+        , row_number() over(partition by player_id_nbacom order by count(*) desc) as row_id
+    FROM linestar_fuzzy_match
+    --WHERE player_id_nbacom = '1628404'
+    GROUP BY player_id_nbacom, player_id_linestar, linestar_player_name, linestar_name_score
+    QUALIFY row_id = 1 
+)
+
+SELECT 
+    n.player_id_nbacom
+    , s.player_id_swish
+    , f.player_id_fantasylabs
+    , l.player_id_linestar
+
+    , n.nbacom_player_name 
+     
+    , s.swish_player_name
+    , s.swish_name_score
+    
+    , f.fantasylabs_player_name
+    , f.fantasylabs_name_score
+
+    , l.linestar_player_name
+    , l.linestar_name_score
+FROM unique_nbacom_players n
+    left join unqiue_swish s
+        on n.player_id_nbacom = s.player_id_nbacom
+    left join unqiue_fantasylabs f
+        on n.player_id_nbacom = f.player_id_nbacom
+    left join unqiue_linestar l
+        on n.player_id_nbacom = l.player_id_nbacom
+
+
+/*
+SELECT * 
+FROM unique_nbacom_players
+WHERE player_id_nbacom in ('1629244','1630214')
+*/
+/*
+SELECT player_id_nbacom, count(*) as cnt
+FROM unique_nbacom_players
+GROUP BY player_id_nbacom
+HAVING count(*) > 1
+*/
 --SELECT * FROM fantasylabs_fuzzy_match WHERE game_date = '2021-01-01' and player_id_nbacom = '1628391'
-
+/*
 SELECT 
     n.team_abbr
     , n.game_date
@@ -185,7 +258,7 @@ FROM nbacom_game_players n
     --n.game_date = '2019-11-12' and n.player_id_nbacom in ('1629671','201144')
     --n.game_date = '2021-01-01'
     --and n.nbacom_player_name in ('TRE JONES','TRAE YOUNG')
-
+*/
 
 
 
