@@ -8,6 +8,7 @@
     }
     , materialized='incremental'    
     , unique_key='unique_key'
+    , on_schema_change='sync_all_columns'
     , merge_update_columns = ['fivethirtyeight_key','team_wins','team_losses','team_score','opp_score','w_l','win_bit','score_diff_game','team_seed'
                                 ,'points','rebounds_total','assists','steals','blocks','turnovers','field_goals_percentage','three_pointers_percentage'
                                 ,'free_throws_percentage','points_in_the_paint','points_second_chance','points_fast_break','biggest_lead','lead_changes'
