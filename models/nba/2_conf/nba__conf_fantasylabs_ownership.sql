@@ -11,6 +11,7 @@ SELECT
     ,cast(player_id as INT64) as player_id_fantasylabs
     ,upper(player_name) as player_name
     ,position
+    ,case when position not in ('PG','SG','SF','PF','C') then null else position end as position_adj
     ,team
     ,cast(salary as INT64) as salary
     ,cast(actual_points as numeric) as actual_points
