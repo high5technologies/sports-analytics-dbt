@@ -3,6 +3,7 @@
     , labels = {'project': 'sports_analytics', 'league':'nba'}
     , materialized='incremental'    
     , unique_key='unique_key'
+    , on_schema_change='sync_all_columns'
     , merge_update_columns = ['player_id_swish','player_id_fantasylabs','player_id_linestar','player_name','player_first_name','player_last_name'
                               ,'player_name_i','player_slug','player_primary_position','jersey_num','update_datetime']
 ) }}

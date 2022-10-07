@@ -87,7 +87,7 @@ SELECT
 
     --, carmelo_ml_pick
     , elo_ml_pick
-    , raptor_ml_pick
+    , coalesce(raptor_ml_pick,'NA') as raptor_ml_pick
     --, espn_ml_pick
     --, carmelo_ml_pick_correct
     , elo_ml_pick_correct
